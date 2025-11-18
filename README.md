@@ -1,0 +1,44 @@
+# Template Agent
+
+A production-minded Vertex AI Gemini agent that orchestrates the Todo REST API from [`template-go`](https://github.com/spacetj/template-go/pull/1/files). The agent uses the Vertex AI Agent Development Kit (ADK) pattern, exposes the Todo CRUD tools, and can run locally or be deployed to Vertex AI Agent Engine.
+
+## Architecture
+```mermaid
+flowchart LR
+    User -->|chat| ADK[TodoOrchestrator]
+    ADK -->|session| Engine[Vertex Agent Engine]
+    Engine -->|HTTP tools| TodoAPI[Todo REST API]
+    subgraph Observability
+      Logs
+      Traces
+    end
+    ADK --> Logs
+    ADK --> Traces
+```
+
+## Quickstart
+1. Create a virtual environment and install dependencies:
+   ```bash
+   make install
+   ```
+2. Copy `.env.sample` to `.env` and fill in values (use Secret Manager for production secrets).
+3. Run the agent locally with streaming conversation:
+   ```bash
+   make run-local
+   ```
+
+## Deployment
+Use the placeholder script to outline deployment to Vertex Agent Engine:
+```bash
+bash scripts/deploy_agent_engine.sh
+```
+
+## Testing & Quality
+- Lint: `make lint`
+- Format: `make format`
+- Unit + integration tests: `make test` (runs fast local + CI suite)
+- End-to-end evals: `pytest -m e2e` (exercises orchestration against a mocked Todo API)
+- Deployed agent evals: set `DEPLOYED_AGENT_URL` (and optional `DEPLOYED_AGENT_TOKEN`) to run `pytest -m deployed` against a live Agent Engine endpoint.
+
+## Security & Operations
+See `docs/SECURITY.md` for IAM, VPC-SC, CMEK guidance and content filters. Operational practices and failure modes are captured in `docs/OPERATIONS_RUNBOOK.md`.
