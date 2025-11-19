@@ -41,6 +41,8 @@ def _extract_reply(payload: Any) -> str:
 @pytest.mark.deployed
 @pytest.mark.skipif(not DEPLOYED_URL, reason="DEPLOYED_AGENT_URL not configured")
 def test_deployed_agent_handles_create_and_list() -> None:
+    assert DEPLOYED_URL is not None
+
     create_resp = requests.post(
         DEPLOYED_URL,
         json={"query": "create todo title: e2e from pytest"},

@@ -8,11 +8,20 @@ from typing import Any, Dict, List, Optional, Tuple
 
 import backoff
 import requests
-from requests import Response
+from requests import HTTPError, Response
 
 from .observability import emit_metric, get_logger, traced_span
 
 _ALLOWED_STATUS = {"open", "in_progress", "done"}
+
+
+def _non_retryable_http_error(exc: Exception) -> bool:
+    """Return True when the HTTP error should not be retried."""
+
+    if not isinstance(exc, HTTPError):
+        return False
+    response = exc.response
+    return response is not None and 400 <= response.status_code < 500
 
 
 @dataclass
@@ -104,7 +113,7 @@ class TodoServiceTool:
         backoff.expo,
         requests.HTTPError,
         max_time=8,
-        giveup=lambda e: 400 <= e.response.status_code < 500,
+        giveup=_non_retryable_http_error,
     )
     def _execute_request(self, method: str, url: str, **kwargs: Any) -> Response:  # pragma: no cover - wrapped by backoff
         response = requests.request(method=method.upper(), url=url, timeout=10, **kwargs)

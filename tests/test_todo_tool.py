@@ -1,5 +1,4 @@
-import time
-from typing import Any, Dict
+from typing import Any
 
 import pytest
 import responses
@@ -13,7 +12,7 @@ def todo_tool() -> TodoServiceTool:
     return TodoServiceTool(base_url="https://api.example.com", rate_limit_per_minute=5, cache_ttl_seconds=1)
 
 
-def add_response(rsps: responses.RequestsMock, method: str, url: str, status: int, json_body: Dict[str, Any]) -> None:
+def add_response(rsps: responses.RequestsMock, method: str, url: str, status: int, json_body: Any) -> None:
     rsps.add(getattr(responses, method.upper()), url, json=json_body, status=status)
 
 

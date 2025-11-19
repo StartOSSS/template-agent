@@ -6,7 +6,7 @@ import logging
 import sys
 import time
 from contextlib import contextmanager
-from typing import Iterator, Optional
+from typing import Iterator, Sequence, Union
 
 import structlog
 from opentelemetry import trace
@@ -14,6 +14,9 @@ from opentelemetry.sdk.resources import SERVICE_NAME, Resource
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExporter
 from pythonjsonlogger import jsonlogger
+
+
+AttributeValue = Union[str, bool, int, float, Sequence[str], Sequence[bool], Sequence[int], Sequence[float]]
 
 
 def configure_logging() -> None:
@@ -45,7 +48,7 @@ def get_logger(name: str) -> structlog.stdlib.BoundLogger:
 
 
 @contextmanager
-def traced_span(name: str, **attributes: object) -> Iterator[trace.Span]:
+def traced_span(name: str, **attributes: AttributeValue) -> Iterator[trace.Span]:
     tracer = trace.get_tracer(__name__)
     with tracer.start_as_current_span(name) as span:
         for key, value in attributes.items():

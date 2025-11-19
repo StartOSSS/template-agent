@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from typing import Dict
+from typing import Any
 
 import pytest
 import responses
@@ -25,7 +25,7 @@ def build_agent(base_url: str) -> TodoOrchestrator:
     return TodoOrchestrator(cfg)
 
 
-def add_json(rsps: responses.RequestsMock, method: str, url: str, status: int, payload: Dict) -> None:
+def add_json(rsps: Any, method: str, url: str, status: int, payload: Any) -> None:
     rsps.add(getattr(responses, method.upper()), url, status=status, json=payload)
 
 

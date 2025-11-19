@@ -1,5 +1,4 @@
 from typing import Dict
-from unittest.mock import MagicMock
 
 from agent.config import Config
 from agent.main import Message, TodoOrchestrator
@@ -37,7 +36,7 @@ def build_agent() -> TodoOrchestrator:
         cache_ttl_seconds=1,
     )
     agent = TodoOrchestrator(cfg)
-    agent.tool = DummyTool()
+    agent.tool = DummyTool()  # type: ignore[assignment]
     return agent
 
 
