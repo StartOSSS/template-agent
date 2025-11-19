@@ -3,7 +3,7 @@ VENV?=.venv
 PIP=$(VENV)/bin/pip
 PYTHON_BIN=$(VENV)/bin/python
 
-.PHONY: help install lint format test run-local e2e deployed-evals adk-ui
+.PHONY: help install lint format test run-local e2e deployed-evals adk-ui security
 
 help: ## Show available targets and their descriptions.
 	@grep -E '^[a-zA-Z0-9_-]+:.*?##' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "%-20s %s\n", $$1, $$2}'
@@ -36,7 +36,11 @@ run-local: install ## Start the TodoOrchestrator CLI for interactive local testi
 
 adk-ui: install ## Launch the ADK developer UI via gcloud (requires VERTEX_PROJECT_ID and VERTEX_LOCATION).
 	@if [ -z "$$VERTEX_PROJECT_ID" ] || [ -z "$$VERTEX_LOCATION" ]; then \
-	echo "VERTEX_PROJECT_ID and VERTEX_LOCATION must be set in the environment or .env"; \
-	exit 1; \
+		echo "VERTEX_PROJECT_ID and VERTEX_LOCATION must be set in the environment or .env"; \
+		exit 1; \
 	fi
 	@gcloud alpha aiplatform agents developer-tools browse --project "$$VERTEX_PROJECT_ID" --location "$$VERTEX_LOCATION"
+
+security: install ## Run local security scans (pip-audit and bandit) to mirror CI checks.
+	$(VENV)/bin/pip-audit -r requirements.txt
+	$(VENV)/bin/bandit -r agent -ll

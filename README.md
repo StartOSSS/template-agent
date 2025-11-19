@@ -47,6 +47,7 @@ bash scripts/deploy_agent_engine.sh
 - Unit + integration tests: `make test` (runs fast local + CI suite)
 - End-to-end evals: `pytest -m e2e` (exercises orchestration against a mocked Todo API)
 - Deployed agent evals: set `DEPLOYED_AGENT_URL` (and optional `DEPLOYED_AGENT_TOKEN`) to run `pytest -m deployed` against a live Agent Engine endpoint.
+- Security scans: `make security` (runs the same `pip-audit` + `bandit` checks as CI)
 
 ## CI/CD
 GitHub Actions cover linting, testing, and security scanning so changes stay verifiable in pull requests:

@@ -13,3 +13,5 @@ ruff==0.6.4
 black==24.8.0
 mypy==1.11.1
 types-requests==2.32.0.20241016
+pip-audit==2.9.0
+bandit==1.9.1
