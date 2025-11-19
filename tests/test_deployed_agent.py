@@ -29,8 +29,14 @@ def _extract_reply(payload: Any) -> str:
             return str(payload["text"])
         # Vertex Agent Engine proxy may return predictions list
         predictions = payload.get("predictions")
-        if isinstance(predictions, list) and predictions and isinstance(predictions[0], dict):
-            candidate = predictions[0].get("content") or predictions[0].get("candidates")
+        if (
+            isinstance(predictions, list)
+            and predictions
+            and isinstance(predictions[0], dict)
+        ):
+            candidate = predictions[0].get("content") or predictions[0].get(
+                "candidates"
+            )
             if isinstance(candidate, list) and candidate:
                 first = candidate[0]
                 if isinstance(first, dict) and "output_text" in first:
@@ -50,7 +56,11 @@ def test_deployed_agent_handles_create_and_list() -> None:
         timeout=30,
     )
     create_resp.raise_for_status()
-    create_reply = _extract_reply(create_resp.json() if create_resp.headers.get("content-type", "").startswith("application/json") else create_resp.text)
+    create_reply = _extract_reply(
+        create_resp.json()
+        if create_resp.headers.get("content-type", "").startswith("application/json")
+        else create_resp.text
+    )
     assert "create" in create_reply.lower()
 
     list_resp = requests.post(
@@ -60,5 +70,12 @@ def test_deployed_agent_handles_create_and_list() -> None:
         timeout=30,
     )
     list_resp.raise_for_status()
-    list_reply = _extract_reply(list_resp.json() if list_resp.headers.get("content-type", "").startswith("application/json") else list_resp.text)
-    assert any(word in list_reply.lower() for word in ["todo", "item", "list"]) or "[" in list_reply
+    list_reply = _extract_reply(
+        list_resp.json()
+        if list_resp.headers.get("content-type", "").startswith("application/json")
+        else list_resp.text
+    )
+    assert (
+        any(word in list_reply.lower() for word in ["todo", "item", "list"])
+        or "[" in list_reply
+    )

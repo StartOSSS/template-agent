@@ -35,8 +35,20 @@ def test_end_to_end_crud_flow() -> None:
     base_url = "https://todo.example.test"
     agent = build_agent(base_url)
 
-    add_json(responses, "POST", f"{base_url}/todos", 201, {"id": "1", "title": "New", "status": "open"})
-    add_json(responses, "GET", f"{base_url}/todos", 200, [{"id": "1", "title": "New", "status": "open"}])
+    add_json(
+        responses,
+        "POST",
+        f"{base_url}/todos",
+        201,
+        {"id": "1", "title": "New", "status": "open"},
+    )
+    add_json(
+        responses,
+        "GET",
+        f"{base_url}/todos",
+        200,
+        [{"id": "1", "title": "New", "status": "open"}],
+    )
     add_json(
         responses,
         "PUT",
@@ -44,7 +56,9 @@ def test_end_to_end_crud_flow() -> None:
         200,
         {"id": "1", "title": "New", "status": "done"},
     )
-    add_json(responses, "DELETE", f"{base_url}/todos/1", 200, {"id": "1", "status": "done"})
+    add_json(
+        responses, "DELETE", f"{base_url}/todos/1", 200, {"id": "1", "status": "done"}
+    )
 
     reply = agent.handle(Message(role="user", content="create todo title: New"))
     assert "Created todo" in reply

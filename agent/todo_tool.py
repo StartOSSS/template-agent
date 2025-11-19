@@ -56,7 +56,12 @@ class RateLimiter:
 class TodoServiceTool:
     """A tool that talks to the Todo HTTP service."""
 
-    def __init__(self, base_url: str, rate_limit_per_minute: int = 30, cache_ttl_seconds: int = 10) -> None:
+    def __init__(
+        self,
+        base_url: str,
+        rate_limit_per_minute: int = 30,
+        cache_ttl_seconds: int = 10,
+    ) -> None:
         self.base_url = base_url.rstrip("/")
         self.logger = get_logger("todo_tool")
         self.rate_limiter = RateLimiter(rate_limit_per_minute)
@@ -70,7 +75,9 @@ class TodoServiceTool:
 
     def _sanitize(self, text: str) -> str:
         lowered = text.lower()
-        if any(token in lowered for token in ["/rm", "drop table", "delete from", "--"]):
+        if any(
+            token in lowered for token in ["/rm", "drop table", "delete from", "--"]
+        ):
             raise ValueError("Input rejected due to unsafe content.")
         return text.strip()[:500]
 
@@ -78,7 +85,11 @@ class TodoServiceTool:
         title = self._sanitize(str(data.get("title", "")).strip())
         if not title:
             raise ValueError("title is required")
-        description = self._sanitize(str(data.get("description", "")).strip()) if data.get("description") else ""
+        description = (
+            self._sanitize(str(data.get("description", "")).strip())
+            if data.get("description")
+            else ""
+        )
         status = data.get("status", "open")
         if status not in _ALLOWED_STATUS:
             raise ValueError(f"status must be one of {_ALLOWED_STATUS}")
@@ -98,7 +109,9 @@ class TodoServiceTool:
         self.logger.info("tool_call_start", tool_name=method, url=url)
         with traced_span(f"todo.{method}", url=url):
             response = self._execute_request(method, url, **kwargs)
-            latency = response.elapsed.total_seconds() * 1000 if response.elapsed else None
+            latency = (
+                response.elapsed.total_seconds() * 1000 if response.elapsed else None
+            )
             self.logger.info(
                 "tool_call_complete",
                 tool_name=method,
@@ -106,7 +119,9 @@ class TodoServiceTool:
                 status_code=response.status_code,
                 latency_ms=latency,
             )
-            emit_metric("todo_tool_call", 1, method=method, status=str(response.status_code))
+            emit_metric(
+                "todo_tool_call", 1, method=method, status=str(response.status_code)
+            )
             return response
 
     @backoff.on_exception(
@@ -115,8 +130,12 @@ class TodoServiceTool:
         max_time=8,
         giveup=_non_retryable_http_error,
     )
-    def _execute_request(self, method: str, url: str, **kwargs: Any) -> Response:  # pragma: no cover - wrapped by backoff
-        response = requests.request(method=method.upper(), url=url, timeout=10, **kwargs)
+    def _execute_request(
+        self, method: str, url: str, **kwargs: Any
+    ) -> Response:  # pragma: no cover - wrapped by backoff
+        response = requests.request(
+            method=method.upper(), url=url, timeout=10, **kwargs
+        )
         response.raise_for_status()
         return response
 
@@ -138,7 +157,9 @@ class TodoServiceTool:
 
     def update_todo(self, todo_id: str, data: Dict[str, Any]) -> Dict[str, Any]:
         payload = self._validate_payload(data)
-        response = self._request("put", f"/todos/{self._sanitize(todo_id)}", json=payload)
+        response = self._request(
+            "put", f"/todos/{self._sanitize(todo_id)}", json=payload
+        )
         self._cache = None
         return self._normalize(response.json())
 
@@ -146,4 +167,3 @@ class TodoServiceTool:
         response = self._request("delete", f"/todos/{self._sanitize(todo_id)}")
         self._cache = None
         return self._normalize(response.json())
-

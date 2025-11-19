@@ -33,7 +33,9 @@ class TodoOrchestrator:
     def _decide_action(self, message: str) -> Dict[str, str]:
         lowered = message.lower()
         if any(unsafe in lowered for unsafe in ["/rm", "drop table", "delete from"]):
-            raise ValueError("Unsafe instruction detected. Please rephrase your request.")
+            raise ValueError(
+                "Unsafe instruction detected. Please rephrase your request."
+            )
         if "list" in lowered or "show" in lowered:
             return {"action": "list"}
         if "create" in lowered or "add" in lowered:
@@ -66,7 +68,9 @@ class TodoOrchestrator:
                     if not todo_id:
                         return "Please provide the todo id to update."
                     updated = self.tool.update_todo(todo_id, payload)
-                    return f"Updated todo {updated['id']} to status {updated['status']}."
+                    return (
+                        f"Updated todo {updated['id']} to status {updated['status']}."
+                    )
                 if action == "delete":
                     todo_id = self._extract_id(message.content)
                     if not todo_id:

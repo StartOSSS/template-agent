@@ -16,20 +16,28 @@ from opentelemetry.sdk.trace.export import BatchSpanProcessor, ConsoleSpanExport
 from pythonjsonlogger import jsonlogger
 
 
-AttributeValue = Union[str, bool, int, float, Sequence[str], Sequence[bool], Sequence[int], Sequence[float]]
+AttributeValue = Union[
+    str, bool, int, float, Sequence[str], Sequence[bool], Sequence[int], Sequence[float]
+]
 
 
 def configure_logging() -> None:
     """Configure structured logging for the application."""
 
     handler = logging.StreamHandler(sys.stdout)
-    formatter = jsonlogger.JsonFormatter("%(asctime)s %(levelname)s %(name)s %(message)s")
+    formatter = jsonlogger.JsonFormatter(
+        "%(asctime)s %(levelname)s %(name)s %(message)s"
+    )
     handler.setFormatter(formatter)
 
     logging.basicConfig(level=logging.INFO, handlers=[handler])
     structlog.configure(
         wrapper_class=structlog.make_filtering_bound_logger(logging.INFO),
-        processors=[structlog.processors.add_log_level, structlog.processors.TimeStamper(fmt="iso"), structlog.processors.JSONRenderer()],
+        processors=[
+            structlog.processors.add_log_level,
+            structlog.processors.TimeStamper(fmt="iso"),
+            structlog.processors.JSONRenderer(),
+        ],
     )
 
 
@@ -66,4 +74,3 @@ def emit_metric(metric_name: str, value: float, **labels: str) -> None:
 
     logger = get_logger("metrics")
     logger.info("metric_emit", metric_name=metric_name, value=value, labels=labels)
-
