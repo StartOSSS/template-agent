@@ -40,5 +40,12 @@ bash scripts/deploy_agent_engine.sh
 - End-to-end evals: `pytest -m e2e` (exercises orchestration against a mocked Todo API)
 - Deployed agent evals: set `DEPLOYED_AGENT_URL` (and optional `DEPLOYED_AGENT_TOKEN`) to run `pytest -m deployed` against a live Agent Engine endpoint.
 
+## CI/CD
+GitHub Actions cover linting, testing, and security scanning so changes stay verifiable in pull requests:
+
+- `Lint`: runs Ruff, Black (check), and mypy on pushes and pull requests.
+- `Test`: executes the pytest suite with the same configuration as `make test`.
+- `Security Scan`: runs dependency (`pip-audit`) and static analysis (`bandit`) scans on pushes, PRs, and a weekly schedule.
+
 ## Security & Operations
 See `docs/SECURITY.md` for IAM, VPC-SC, CMEK guidance and content filters. Operational practices and failure modes are captured in `docs/OPERATIONS_RUNBOOK.md`.
