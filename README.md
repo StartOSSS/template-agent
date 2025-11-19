@@ -17,14 +17,22 @@ flowchart LR
 ```
 
 ## Quickstart
-1. Create a virtual environment and install dependencies:
+1. Discover all helper commands (including ADK UI helpers):
+   ```bash
+   make help
+   ```
+2. Create a virtual environment and install dependencies:
    ```bash
    make install
    ```
-2. Copy `.env.sample` to `.env` and fill in values (use Secret Manager for production secrets).
-3. Run the agent locally with streaming conversation:
+3. Copy `.env.sample` to `.env` and fill in values (use Secret Manager for production secrets).
+4. Run the agent locally with streaming conversation:
    ```bash
    make run-local
+   ```
+5. Launch the ADK developer UI (requires `gcloud alpha` plus `VERTEX_PROJECT_ID` and `VERTEX_LOCATION`):
+   ```bash
+   make adk-ui
    ```
 
 ## Deployment
